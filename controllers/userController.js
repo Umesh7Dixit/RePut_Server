@@ -86,3 +86,91 @@ export const getUserProfile = async (req,res) => {
     }
 
 };
+
+
+
+
+
+
+
+
+
+// _______________________________________________________
+
+
+import { UserDetails } from "../models/userModel.js";
+
+
+export const createUserDetails = async (req, res) => {
+  try {
+    const { firstName, lastName, phoneNumber, industry, gstNumber, companyName, address } = req.body;
+
+    const userDetails = new UserDetails({
+      firstName,
+      lastName,
+      phoneNumber,
+      industry,
+      gstNumber,
+      companyName,
+      address
+    });
+
+    await userDetails.save();  // save user details
+
+    res.status(201).json(userDetails);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in createUserDetails: ", error.message);
+  }
+};
+
+
+
+// export const getUserDetails = async (req, res) => {
+//   try {
+//     const userDetails = await UserDetails.findById(req.params.id);
+
+//     if (!userDetails) {
+//       return res.status(404).json({ error: 'User details not found' });
+//     }
+
+//     res.status(200).json(userDetails);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//     console.log("Error in getUserDetails: ", error.message);
+//   }
+// };
+
+// export const updateUserDetails = async (req, res) => {
+//   try {
+//     const userDetails = await UserDetails.findByIdAndUpdate(
+//       req.params.id,
+//       req.body,
+//       { new: true, runValidators: true }
+//     );
+
+//     if (!userDetails) {
+//       return res.status(404).json({ error: 'User details not found' });
+//     }
+
+//     res.status(200).json(userDetails);
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//     console.log("Error in updateUserDetails: ", error.message);
+//   }
+// };
+
+// export const deleteUserDetails = async (req, res) => {
+//   try {
+//     const userDetails = await UserDetails.findByIdAndDelete(req.params.id);
+
+//     if (!userDetails) {
+//       return res.status(404).json({ error: 'User details not found' });
+//     }
+
+//     res.status(200).json({ message: 'User details deleted' });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//     console.log("Error in deleteUserDetails: ", error.message);
+//   }
+// };

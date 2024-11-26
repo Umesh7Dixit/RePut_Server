@@ -14,13 +14,27 @@
   "author": "RePut",
   "license": "ISC",
   "dependencies": {
+    "@apollo/server": "^4.11.0",
+    "@graphql-tools/merge": "^9.0.8",
+    "apollo-server": "^3.13.0",
+    "apollo-server-express": "^3.13.0",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "connect-mongodb-session": "^5.0.0",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.21.0",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "graphql": "^16.9.0",
+    "graphql-passport": "^0.6.8",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",
-    "mongoose": "^8.6.3",
-    "nodemon": "^3.1.6"
+    "mongoose": "^8.7.1",
+    "mssql": "^11.0.1",
+    "mssql2": "^3.3.1",
+    "mysql2": "^3.11.3",
+    "nodemon": "^3.1.6",
+    "passport": "^0.7.0"
   }
 }
