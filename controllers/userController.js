@@ -126,51 +126,121 @@ export const createUserDetails = async (req, res) => {
 
 
 
-// export const getUserDetails = async (req, res) => {
-//   try {
-//     const userDetails = await UserDetails.findById(req.params.id);
 
-//     if (!userDetails) {
-//       return res.status(404).json({ error: 'User details not found' });
-//     }
 
-//     res.status(200).json(userDetails);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//     console.log("Error in getUserDetails: ", error.message);
-//   }
-// };
+// ___________________________Reset Password______________________________________
 
-// export const updateUserDetails = async (req, res) => {
-//   try {
-//     const userDetails = await UserDetails.findByIdAndUpdate(
-//       req.params.id,
-//       req.body,
-//       { new: true, runValidators: true }
-//     );
 
-//     if (!userDetails) {
-//       return res.status(404).json({ error: 'User details not found' });
-//     }
 
-//     res.status(200).json(userDetails);
-//   } catch (error) {
-//     res.status(400).json({ error: error.message });
-//     console.log("Error in updateUserDetails: ", error.message);
-//   }
-// };
+import nodemailer from 'nodemailer';
+import randomstring from "randomstring";
 
-// export const deleteUserDetails = async (req, res) => {
-//   try {
-//     const userDetails = await UserDetails.findByIdAndDelete(req.params.id);
 
-//     if (!userDetails) {
-//       return res.status(404).json({ error: 'User details not found' });
-//     }
+export const sendResetPasswordMail = async(email, token)=> {
 
-//     res.status(200).json({ message: 'User details deleted' });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//     console.log("Error in deleteUserDetails: ", error.message);
-//   }
-// };
+  try {
+
+    var transporter = nodemailer.createTransport({
+      host:'smtp.gmail.com',
+      port: 587,  // default port
+      secure: false,
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER, 
+        // pass: process.env.EMAIL_PASS,         
+        pass: 'dgvywgvfudlagahy',         
+      }
+    });
+
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER, 
+      to: email,
+      subject: 'Reset Password',
+      // text: `Hello ,\n\n
+      // Please use the following link to reset your password: \n\n
+      // "http://${process.env.SERVER_URL}/api/reset-password?token='+${token}+ '"\n\n
+      // If you did not request this password reset, please ignore this email.\n\n
+      // Regards,\n
+      // Your Team`
+
+      html: `<p>Hi,</p>
+      <p>Please click the link below to reset your password:</p>
+      <a href="http://localhost:5000/api/user/reset-password?token=${token}">Reset your password</a>
+      <p>If you did not request a password reset, please ignore this email.</p>\n
+      <p>Regards<p>\n
+       RePut Team`
+   }
+
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: '+ info.response);
+      }
+    });
+    
+  } catch (error) {
+    res.status(400).send({success:false, message:error.message});
+  }
+
+}
+
+
+export const forgotPassword = async (req, res) => {
+
+  try {
+    
+      const { email } = req.body;
+      const userData = await User.findOne({email});
+
+      if(userData){
+        const randomString = randomstring.generate();
+        const data = await User.updateOne({email},{$set: {token: randomString}});
+        
+        // sendResetPasswordMail(userData.name, userData.email, randomString );
+        sendResetPasswordMail( userData.email, randomString );
+        
+        res.status(200).send({success:true, message:"Please check your email"});
+
+      }else{
+        res.status(200).send({success:true, message:"Invalid Email"});
+      }
+
+  } catch (error) {
+    res.status(400).send({success:true, message:error.message});
+  }
+
+};
+
+
+
+// ---------Reset Password
+
+
+export const resetPassword = async (req, res) => {
+
+  try {
+
+    const token = req.query.token;
+    const tokenData = await User.findOne({ token: token});
+
+    if(tokenData)
+    {
+      const  password  = req.body.password;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      const userData = await User.findByIdAndUpdate({_id: tokenData._id}, {$set:{password: hashedPassword,token:''}},{new: true});
+      res.status(200).send( {success:true, message:"Passwords updated successfully", data:userData});
+    }
+    else{
+      res.status(200).send({success:false, message:"This link has been expired."});
+    }
+
+    const userData = await User.findOne({token});
+    
+  } catch (error) {
+    res.status(400).send({success:true, message:error.message});
+  }
+
+}

@@ -11,6 +11,10 @@ const userSchema = mongoose.Schema(
         password: {
             type: String,
             required: true
+        },
+        token:{
+            type: String,
+            default:'',
         }
     },
     { timestamps : true,}
@@ -57,3 +61,16 @@ const userDetailsSchema = new mongoose.Schema({
 const UserDetails = mongoose.model("UserDetails", userDetailsSchema);
 
 export {UserDetails};
+
+
+
+// // reset password
+
+// const userReset = new mongoose.Schema({
+//   email: { type: String, required: true, unique: true },
+//   password: { type: String, required: true },
+//   resetToken: { type: String },
+//   tokenExpiry: { type: Date }
+// });
+
+// module.exports = mongoose.model('userReset', userReset);
